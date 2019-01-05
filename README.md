@@ -1,9 +1,10 @@
-### Mean Spectral Normalization
-
+## Mean Spectral Normalization
+----------------
 This repo contains the code to reproduce the plots for the paper "Mean Spectral Normalization" (arXiv link).
 
 #### Abstract
 
+---------------------------
 #### Requirements
 The following are required to successfully run the code -
 - Python 3.6.8
@@ -16,4 +17,5 @@ The following are required to successfully run the code -
 
 **Note:** The above experiments were run on NVIDIA 1080 ti GPU.
 
+--------------------
 #### Citation Information
