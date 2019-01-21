@@ -350,7 +350,7 @@ class VGG(nn.Module):
         x = self.classifier(x)
         return x
 
-def make_layers(cfg, batch_norm=False):
+def make_layers(cfg, norm='BN'):
     layers = []
     in_channels = 3
     for i, v in enumerate(cfg):
@@ -360,8 +360,14 @@ def make_layers(cfg, batch_norm=False):
             padding = v[1] if isinstance(v, tuple) else 1
             out_channels = v[0] if isinstance(v, tuple) else v
             conv2d = nn.Conv2d(in_channels, out_channels, kernel_size=3, padding=padding)
-            if batch_norm:
+            if norm == 'BN':
                 layers += [conv2d, nn.BatchNorm2d(out_channels, affine=False), nn.ReLU(), nn.Dropout(0.3)]
+            elif norm == 'SN':
+                SNconv2d = SNConv2d(in_channels, out_channels, kernel_size=3, padding=padding)
+                layers += [SNconv2d, nn.LeakyReLU(0.1, inplace=True)]
+            elif norm == 'MSN':
+                SNconv2d = SNConv2d(in_channels, out_channels, kernel_size=3, padding=padding)
+                layers += [SNconv2d, MeanSpectralNorm(out_channels), nn.LeakyReLU(0.1, inplace=True)]
             else:
                 layers += [conv2d, nn.ReLU(), nn.Dropout(0.3)]
             in_channels = out_channels
@@ -369,6 +375,6 @@ def make_layers(cfg, batch_norm=False):
 
 def vgg16(n_channel=32, pretrained=None, norm = None):
     cfg = [n_channel, n_channel, 'M', 2*n_channel, 2*n_channel, 'M', 4*n_channel, 'M', (8*n_channel, 0), 'M']
-    layers = make_layers(cfg, batch_norm=True)
+    layers = make_layers(cfg, norm=norm)
     model =VGG(layers, n_channel=8*n_channel, num_classes=10)
     return model
