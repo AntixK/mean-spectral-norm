@@ -71,8 +71,8 @@ class RunExperiments(object):
             train_compose = transforms.Compose(common_trans)
             test_compose = transforms.Compose(common_trans)
 
-            train_set = datasets.SVHN('data', split = 'train', transform=train_compose, download=True)
-            test_set = datasets.SVHN('data', split = 'test', transform=test_compose, download=True)
+            train_set = datasets.SVHN('data/svhn-data', split = 'train', transform=train_compose, download=True)
+            test_set = datasets.SVHN('data/svhn-data', split = 'test', transform=test_compose, download=True)
             self.trainloader = torch.utils.data.DataLoader(train_set, batch_size=self.batchsize, shuffle=True, num_workers=4)
             self.train_len = len(self.trainloader)
 
@@ -133,13 +133,27 @@ class RunExperiments(object):
         elif self.dataset == 'SVHN':
             if self.model_type == 'SNconv':
                 self.net = vgg16(norm='SN').cuda()
-                self.mult = 3
+                self.mult = 2
             elif self.model_type == 'BNconv':
                 self.net = vgg16(norm='BN').cuda()
-                self.mult = 4
+                self.mult = 2
             elif self.model_type == 'MSNconv':
                 self.net = vgg16(norm='MSN').cuda()
-                self.mult = 4
+                self.mult = 2
+            self.layer_grads = []
+            self.layer_grad_eigs = []
+            self.layer_mean = []
+            self.layer_std = []
+            self.layer_rank = []
+            self.layer_singular = []
+            for i in range(6):
+                self.layer_grads.append([])
+                self.layer_grad_eigs.append([])
+                self.layer_mean.append([])
+                self.layer_std.append([])
+                self.layer_rank.append([])
+                self.layer_singular.append([])
+            self.num_logs = 6
 
         elif self.dataset == 'CIFAR10':
             if self.model_type == 'SNconv':
@@ -210,8 +224,8 @@ class RunExperiments(object):
 
     def log_layer_params(self, log_grads = False):
         params = list(self.net.parameters())
-        print("params = ", [x.shape for x in params])
-        print([x.size() for i, x in enumerate(params)])# if x.dim() == 4])
+        # print("params = ", [x.shape for x in params])
+        # print([x.size() for i, x in enumerate(params)])# if x.dim() == 4])
         #
         #print(idx)
         # print(params[0].grad.cpu().numpy().ravel().shape)
@@ -251,6 +265,29 @@ class RunExperiments(object):
                     #print(i, self.layer_grads[i].shape, grads.shape)
                     self.layer_grads[i] = np.hstack((self.layer_grads[i], grads.ravel().reshape(-1, 1)))
                     # print(self.layer_grads[i].shape)
+
+        elif self.dataset == 'SVHN':
+            # Log gradients
+            for i in range(6):
+                # Log mean and std of each layer weight
+                weights = params[i * self.mult].data.cpu().numpy()
+                #print(params[i * self.mult].size())
+                #print(weights.shape)
+                self.layer_mean[i].append(weights.mean())
+                self.layer_std[i].append(weights.std())
+
+                grads = params[i * self.mult].grad.cpu().numpy()
+                if i > 1:
+                    # Log mean rank and mean singular values of each layer
+                    #print(weights.shape)
+                    #print(np.linalg.matrix_rank(weights))
+                    self.layer_rank[i].append(np.linalg.matrix_rank(weights).mean())
+                    _, S, _ = np.linalg.svd(weights)
+                    self.layer_singular[i].append(S.max(axis=2).mean())
+
+                    # Log Mean Max Eigen value of the gradient matrix
+                    self.layer_grad_eigs[i].append(np.abs(np.linalg.eigvals(grads)).mean(axis=2).max())
+
         else:
             idx = np.array([i for i, x in enumerate(params) if x.dim() == 4])
             i = 0
@@ -452,10 +489,10 @@ grid = [(64, 'MNIST', 'MSNconv', 0.1),
 #print(torch.has_cudnn)
 batchsize = 64
 for dataset in ['SVHN']:#['MNIST', 'CIFAR10']:
-    for model_type in ['MSNconv']:
-        for lr in [0.0001]:#[0.1, 0.001]:
+    for model_type in ['MSNconv','SNconv','BNconv']:
+        for lr in [0.001, 0.1]:#[0.1, 0.001]:
             exp = RunExperiments(batchsize, dataset, model_type, lr)
-            exp.run_experiment(num_epochs = 1)
+            exp.run_experiment(num_epochs = 400)
 
 # for i, (batchsize, dataset, model_type, lr) in grid:
 #     exp = RunExperiments(batchsize, dataset, model_type, lr)

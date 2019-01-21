@@ -334,15 +334,15 @@ class MNISTMSNConvNet(nn.Module):
         return out
 
 class VGG(nn.Module):
-
-    def __init__(self, features, num_classes=10, init_weights=True):
+    def __init__(self, features, n_channel, num_classes):
         super(VGG, self).__init__()
+        assert isinstance(features, nn.Sequential), type(features)
         self.features = features
         self.classifier = nn.Sequential(
-            nn.Linear(256, num_classes)
+            nn.Linear(n_channel, num_classes)
         )
-        if init_weights:
-            self._initialize_weights()
+        # print(self.features)
+        # print(self.classifier)
 
     def forward(self, x):
         x = self.features(x)
@@ -350,48 +350,25 @@ class VGG(nn.Module):
         x = self.classifier(x)
         return x
 
-    def _initialize_weights(self):
-        for m in self.modules():
-            if isinstance(m, nn.Conv2d):
-                nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
-                if m.bias is not None:
-                    nn.init.constant_(m.bias, 0)
-            elif isinstance(m, nn.BatchNorm2d):
-                nn.init.constant_(m.weight, 1)
-                nn.init.constant_(m.bias, 0)
-            elif isinstance(m, nn.Linear):
-                nn.init.normal_(m.weight, 0, 0.01)
-                nn.init.constant_(m.bias, 0)
-
-
-def make_layers(cfg, norm=None):
+def make_layers(cfg, batch_norm=False):
     layers = []
     in_channels = 3
-    for v in cfg:
+    for i, v in enumerate(cfg):
         if v == 'M':
             layers += [nn.MaxPool2d(kernel_size=2, stride=2)]
         else:
-            if norm == 'BN':
-                conv2d = nn.Conv2d(in_channels, v, kernel_size=3, padding=1)
-                layers += [conv2d, nn.BatchNorm2d(v), nn.LeakyReLU(0.1,inplace=True)]
-            elif norm == 'SN':
-                conv2d = SNConv2d(in_channels, v, kernel_size=3, padding=1)
-                layers += [conv2d, nn.LeakyReLU(0.1,inplace=True)]
-            elif norm == 'MSN':
-                conv2d = SNConv2d(in_channels, v, kernel_size=3, padding=1)
-                layers += [conv2d, MeanSpectralNorm(v), nn.LeakyReLU(0.1, inplace=True)]
+            padding = v[1] if isinstance(v, tuple) else 1
+            out_channels = v[0] if isinstance(v, tuple) else v
+            conv2d = nn.Conv2d(in_channels, out_channels, kernel_size=3, padding=padding)
+            if batch_norm:
+                layers += [conv2d, nn.BatchNorm2d(out_channels, affine=False), nn.ReLU(), nn.Dropout(0.3)]
             else:
-                conv2d = nn.Conv2d(in_channels, v, kernel_size=3, padding=1)
-                layers += [conv2d, nn.LeakyReLU(0.1,inplace=True)]
-            in_channels = v
+                layers += [conv2d, nn.ReLU(), nn.Dropout(0.3)]
+            in_channels = out_channels
     return nn.Sequential(*layers)
 
-
-def vgg16(n_channel=32, norm = None):
-    """VGG 16-layer model (configuration "D") with batch normalization
-    """
-    cfg = [n_channel, n_channel, 'M', 2 * n_channel, 2 * n_channel, 'M', 4 * n_channel, 4 * n_channel, 'M',
-           8 * n_channel, 'M']
-
-    model = VGG(make_layers(cfg, norm))
+def vgg16(n_channel=32, pretrained=None, norm = None):
+    cfg = [n_channel, n_channel, 'M', 2*n_channel, 2*n_channel, 'M', 4*n_channel, 'M', (8*n_channel, 0), 'M']
+    layers = make_layers(cfg, batch_norm=True)
+    model =VGG(layers, n_channel=8*n_channel, num_classes=10)
     return model
