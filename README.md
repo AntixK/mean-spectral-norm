@@ -2,7 +2,18 @@
 ----------------
 This repo contains the code to reproduce the plots for the paper "Mean Spectral Normalization" (arXiv link).
 
-#### Abstract
+#### Main Results
+![MSN_sparse](https://github.com/AntixK/mean-spectral-norm/blob/master/plots/Gradient_Sparsity_CIFAR10.png)
+
+*Spectral Norm essentially induces a high level sparsity in the network which is advatageous for deep neural nets, but dimishes the performance of medium and small neural nets. MSN improves upon Spectral Norm maintaining the sparsity as improving the performance as close to Batch Norm.*
+
+![MSN Test Accuracy](https://github.com/AntixK/mean-spectral-norm/blob/master/plots/Test_accuracy_comp.png)
+
+*MSN works well for small, medium and alrge networks, comparable to that of Batch Norm, but with lesser number of trainable parameters.*
+
+![MSNGAN on CIFAR10](https://github.com/AntixK/mean-spectral-norm/blob/master/MSNGAN/log/MSNGAN/MSNGAN_results.gif)
+
+*Unsupervised Image Generation using WGAN on CIFAR10*
 
 ---------------------------
 #### Requirements
