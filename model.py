@@ -46,18 +46,6 @@ class ConvNet(nn.Module):
         return output
 
 class DenseNet(nn.Module):
-    r"""Densenet-BC model class, based on
-    `"Densely Connected Convolutional Networks" <https://arxiv.org/pdf/1608.06993.pdf>`
-    Args:
-        growth_rate (int) - how many filters to add each layer (`k` in paper)
-        block_config (list of 3 or 4 ints) - how many layers in each pooling block
-        num_init_features (int) - the number of filters to learn in the first convolution layer
-        bn_size (int) - multiplicative factor for number of bottle neck layers
-            (i.e. bn_size * k features in the bottleneck layer)
-        drop_rate (float) - dropout rate after each dense layer
-        num_classes (int) - number of classification classes
-    """
-
     def __init__(
         self,
         growth_rate=12,
@@ -112,18 +100,6 @@ class DenseNet(nn.Module):
         return out
 
 class SNDenseNet(nn.Module):
-    r"""Densenet-BC model class, based on
-    `"Densely Connected Convolutional Networks" <https://arxiv.org/pdf/1608.06993.pdf>`
-    Args:
-        growth_rate (int) - how many filters to add each layer (`k` in paper)
-        block_config (list of 3 or 4 ints) - how many layers in each pooling block
-        num_init_features (int) - the number of filters to learn in the first convolution layer
-        bn_size (int) - multiplicative factor for number of bottle neck layers
-            (i.e. bn_size * k features in the bottleneck layer)
-        drop_rate (float) - dropout rate after each dense layer
-        num_classes (int) - number of classification classes
-    """
-
     def __init__(
         self,
         growth_rate=12,
@@ -164,8 +140,6 @@ class SNDenseNet(nn.Module):
                 self.features.add_module("transition%d" % (i + 1), trans)
                 num_features = int(num_features * compression)
 
-        # Final batch norm
-        #self.features.add_module("norm_final", nn.BatchNorm2d(num_features))
 
         # Linear layer
         self.classifier = SNLinear(num_features, num_classes)
@@ -178,17 +152,6 @@ class SNDenseNet(nn.Module):
         return out
 
 class MSNDenseNet(nn.Module):
-    r"""Densenet-BC model class, based on
-    `"Densely Connected Convolutional Networks" <https://arxiv.org/pdf/1608.06993.pdf>`
-    Args:
-        growth_rate (int) - how many filters to add each layer (`k` in paper)
-        block_config (list of 3 or 4 ints) - how many layers in each pooling block
-        num_init_features (int) - the number of filters to learn in the first convolution layer
-        bn_size (int) - multiplicative factor for number of bottle neck layers
-            (i.e. bn_size * k features in the bottleneck layer)
-        drop_rate (float) - dropout rate after each dense layer
-        num_classes (int) - number of classification classes
-    """
 
     def __init__(
         self,
@@ -361,7 +324,7 @@ def make_layers(cfg, norm='BN'):
             out_channels = v[0] if isinstance(v, tuple) else v
             conv2d = nn.Conv2d(in_channels, out_channels, kernel_size=3, padding=padding)
             if norm == 'BN':
-                layers += [conv2d, nn.BatchNorm2d(out_channels, affine=False), nn.ReLU(), nn.Dropout(0.3)]
+                layers += [conv2d, nn.BatchNorm2d(out_channels), nn.ReLU(), nn.Dropout(0.3)]
             elif norm == 'SN':
                 SNconv2d = SNConv2d(in_channels, out_channels, kernel_size=3, padding=padding)
                 layers += [SNconv2d, nn.LeakyReLU(0.1, inplace=True)]
