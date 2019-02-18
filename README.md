@@ -5,7 +5,7 @@ This repo contains the code to reproduce the plots for the paper "Mean Spectral 
 #### Main Results
 ![MSN_sparse](https://github.com/AntixK/mean-spectral-norm/blob/master/plots/Gradient_Sparsity_CIFAR10.png)
 
-*Spectral Norm essentially induces a high level sparsity in the network which is advatageous for deep neural nets, but dimishes the performance of medium and small neural nets. MSN improves upon Spectral Norm maintaining the sparsity as improving the performance as close to Batch Norm.*
+*Spectral Normalization essentially induces a high level gradient sparsity in the network which is advatageous for deep neural nets, but dimishes the performance of medium and small neural nets. Our Mean Spectral Normalization (MSN) improves upon Spectral Normalization maintaining the gradient sparsity as improving the performance as close to Batch Norm.*
 
 ![MSN Test Accuracy](https://github.com/AntixK/mean-spectral-norm/blob/master/plots/Test_accuracy_comp.png)
 
@@ -29,4 +29,4 @@ The following are required to successfully run the code -
 **Note:** The above experiments were run on NVIDIA 1080 ti GPU.
 
 --------------------
-#### Citation Information
+%#### Citation Information
