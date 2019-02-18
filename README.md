@@ -1,6 +1,6 @@
 ## Mean Spectral Normalization
 ----------------
-This repo contains the code to reproduce the plots for the paper "Mean Spectral Normalization" (arXiv link) by Anand Krishnamoorthy Subramanian and Nak-Young Chong, 2019.
+This repo contains the code to reproduce the plots for the paper "Mean Spectral Normalization" (Under Review) by Anand Krishnamoorthy Subramanian and Nak-Young Chong, 2019.
 
 #### Main Results
 ![MSN_sparse](https://github.com/AntixK/mean-spectral-norm/blob/master/plots/Gradient_Sparsity_CIFAR10.png)
