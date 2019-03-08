@@ -16,10 +16,10 @@ This repo contains the code to reproduce the plots for the paper "Mean Spectral 
 *MSN works well for small, medium and alrge networks, comparable to that of Batch Norm, but with lesser number of trainable parameters.*
 
 <p align="center">
-  <img width="350" height="350" src="https://github.com/AntixK/mean-spectral-norm/blob/master/MSNGAN/log/MSNGAN/MSNGAN_results.gif">
+  <img width="300" height="300" src="https://github.com/AntixK/mean-spectral-norm/blob/master/MSNGAN/log/MSNGAN/MSNGAN_results.gif">
+  <br><br>
+  Unsupervised Image Generation using MSNGAN on CIFAR10
 </p>
-
-*Unsupervised Image Generation using MSNGAN on CIFAR10*
 
 ---------------------------
 #### Requirements
