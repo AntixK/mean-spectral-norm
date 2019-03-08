@@ -17,7 +17,7 @@ This repo contains the code to reproduce the plots for the paper "Mean Spectral 
 
 ![MSNGAN on CIFAR10](https://github.com/AntixK/mean-spectral-norm/blob/master/MSNGAN/log/MSNGAN/MSNGAN_results.gif)
 
-*Unsupervised Image Generation using WGAN on CIFAR10*
+*Unsupervised Image Generation using MSNGAN on CIFAR10*
 
 ---------------------------
 #### Requirements
