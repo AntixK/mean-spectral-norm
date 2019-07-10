@@ -1,6 +1,6 @@
 ## Mean Spectral Normalization
 ----------------
-This repo contains the code to reproduce the plots for the paper "Mean Spectral Normalization of Deep Neural Networks for Embedded Automation" (Accepted for Oral presentation at IEEE CASE 2019) by Anand Krishnamoorthy Subramanian and Nak-Young Chong, 2019.
+This repo contains the code to reproduce the plots for the paper "Mean Spectral Normalization of Deep Neural Networks for Embedded Automation" [[ArXiv Version]](https://arxiv.org/abs/1907.04003) (Accepted for Oral presentation at IEEE CASE 2019) by Anand Krishnamoorthy Subramanian and Nak-Young Chong, 2019. 
 
 #### Main Results
 ![MSN_sparse](https://github.com/AntixK/mean-spectral-norm/blob/master/plots/Gradient_Sparsity_CIFAR10.png)
